@@ -1,4 +1,4 @@
-[![License][lic-img]][lic] [![FOSSA Status][fossa-img]][fossa] [![pkg.go.dev reference][go.dev-img]][go.dev] [![Build Status][ci-img]][ci] [![Go Report Card][report-img]][report] [![Release][release-img]][release]
+[![License][lic-img]][lic] [![pkg.go.dev reference][go.dev-img]][go.dev] [![Build Status][ci-img]][ci] [![Go Report Card][report-img]][report] [![Release][release-img]][release]
 
 # go-daemon
 
@@ -28,5 +28,3 @@ A daemon package for use with Go services without any dependencies (except for `
 [release]: https://github.com/stdatiks/go-daemon/releases/tag/v0.2.1
 [lic-img]: https://img.shields.io/badge/License-MIT-blue.svg
 [lic]: https://opensource.org/licenses/MIT
-[fossa-img]: https://app.fossa.com/api/projects/git%2Bgithub.com%2Fstdatiks%2Fgo-daemon.svg?type=shield
-[fossa]: https://app.fossa.com/projects/git%2Bgithub.com%2Fstdatiks%2Fgo-daemon?ref=badge_shield

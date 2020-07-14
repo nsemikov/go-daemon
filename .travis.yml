@@ -14,16 +14,12 @@ env:
   - GO111MODULE=on GOOS=windows GOARCH=i386
 install:
   - curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.27.0
-before_script:
-    - "curl -H 'Cache-Control: no-cache' https://raw.githubusercontent.com/fossas/fossa-cli/master/install.sh | sudo bash"
 script:
   - golangci-lint run
   # onlytest on linux
   - if [ $GOOS == "linux" ]; then go test -race -coverprofile=coverage.txt -covermode=atomic ./...; fi
-  - fossa
 after_success:
   - bash <(curl -s https://codecov.io/bash)
-  - cd <SOURCE_DIR> && fossa test
 matrix:
   allow_failures:
     - go: tip
