@@ -11,5 +11,5 @@ type Daemon interface {
 	Start() (string, error)
 	Stop() (string, error)
 	Uninstall() (string, error)
-	Run() (string, error)
+	Run() error
 }

@@ -78,11 +78,13 @@ func main() {
 			err = fmt.Errorf(usage)
 		}
 	} else {
-		status, err = d.Run()
+		err = d.Run()
 	}
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err.Error())
 		os.Exit(1)
 	}
-	fmt.Println(status)
+	if status != "" {
+		fmt.Println(status)
+	}
 }

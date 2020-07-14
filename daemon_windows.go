@@ -255,25 +255,24 @@ func (s *daemon) Continue() (string, error) {
 }
 
 // Run - Run service
-func (s *daemon) Run() (string, error) {
+func (s *daemon) Run() error {
 	var (
-		action      = "Running " + s.config.Description + ":"
 		interactive bool
 		runit       func(string, svc.Handler) error
 		err         error
 	)
 	interactive, err = svc.IsAnInteractiveSession()
 	if err != nil {
-		return failed(action), getWindowsError(err)
+		return getWindowsError(err)
 	}
 	runit = svc.Run
 	if interactive {
 		runit = debug.Run
 	}
-	if err := runit(s.config.Name, &serviceHandler{s.config}); err != nil {
-		return failed(action), getWindowsError(err)
+	if err = runit(s.config.Name, &serviceHandler{s.config}); err != nil {
+		return getWindowsError(err)
 	}
-	return success(action), nil
+	return nil
 }
 
 func execPath() (string, error) {

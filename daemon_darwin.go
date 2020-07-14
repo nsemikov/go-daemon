@@ -152,8 +152,6 @@ func (s *daemon) Continue() (string, error) {
 }
 
 // Run - Run daemon
-func (s *daemon) Run() (string, error) {
-	action := "Running " + s.config.Description + ":"
-	err := s.config.RunHdlr()
-	return success(action), err
+func (s *daemon) Run() error {
+	return s.config.RunHdlr()
 }
