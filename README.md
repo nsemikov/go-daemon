@@ -3,6 +3,7 @@
 A daemon package for use with Go services without any dependencies (except for `golang.org/x/sys/windows`)
 
 ![Logo](https://github.com/stdatiks/go-daemon/blob/master/.github/images/go-daemon.1280x640.png?raw=true)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fstdatiks%2Fgo-daemon.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fstdatiks%2Fgo-daemon?ref=badge_shield)
 
 [![License][lic-img]][lic] [![pkg.go.dev reference][go.dev-img]][go.dev] [![Build Status][ci-img]][ci] [![Go Report Card][report-img]][report]
 
@@ -26,3 +27,7 @@ A daemon package for use with Go services without any dependencies (except for `
 [report]: https://goreportcard.com/report/stdatiks/go-daemon
 [lic-img]: https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square
 [lic]: https://opensource.org/licenses/MIT
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fstdatiks%2Fgo-daemon.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fstdatiks%2Fgo-daemon?ref=badge_large)
