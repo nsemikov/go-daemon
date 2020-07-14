@@ -43,7 +43,7 @@ func (s *daemon) Install(args ...string) (string, error) {
 	if s.specific.installed() {
 		return failed(action), ErrAlreadyInstalled
 	}
-	if err = s.specific.Install(); err != nil {
+	if err = s.specific.Install(args...); err != nil {
 		return failed(action), err
 	}
 	return success(action), nil
