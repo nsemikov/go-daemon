@@ -13,6 +13,14 @@ type daemonUpstart struct {
 	config *Config
 }
 
+func (s *daemonUpstart) startRunLevels() []string {
+	return runLevels(s.config.StartRunLevels)
+}
+
+func (s *daemonUpstart) stopRunLevels() []string {
+	return runLevels(s.config.StopRunLevels)
+}
+
 func (s *daemonUpstart) path() string {
 	return "/etc/init/" + s.config.Name + ".conf"
 }
@@ -55,8 +63,8 @@ func (s *daemonUpstart) Install(args ...string) error {
 			s.config.Description,
 			execPath,
 			strings.Join(args, " "),
-			strings.Join(s.config.startRunLevels(), ""),
-			strings.Join(s.config.stopRunLevels(), ""),
+			strings.Join(s.startRunLevels(), ""),
+			strings.Join(s.stopRunLevels(), ""),
 		},
 	); err != nil {
 		return err

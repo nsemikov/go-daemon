@@ -25,6 +25,14 @@ func New(c *Config) (Daemon, error) {
 	return &daemon{c}, nil
 }
 
+func (s *daemon) pidFile() string {
+	name := s.config.PIDName
+	if s.config.PIDName == "" {
+		name = s.config.Name
+	}
+	return s.config.PIDDir + "/" + name + ".pid"
+}
+
 func (s *daemon) path() string {
 	return "/usr/local/etc/rc.d/" + s.config.Name
 }
@@ -94,7 +102,7 @@ func (s *daemon) Install(args ...string) (string, error) {
 		file,
 		&struct {
 			Name, Description, Path, Args, PIDFile string
-		}{s.config.Name, s.config.Description, execPath, strings.Join(args, " "), s.config.pidPath()},
+		}{s.config.Name, s.config.Description, execPath, strings.Join(args, " "), s.pidFile()},
 	); err != nil {
 		return failed(action), err
 	}

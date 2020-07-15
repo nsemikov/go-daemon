@@ -13,6 +13,14 @@ type daemonSystemD struct {
 	config *Config
 }
 
+func (s *daemonSystemD) pidFile() string {
+	name := s.config.PIDName
+	if s.config.PIDName == "" {
+		name = s.config.Name
+	}
+	return s.config.PIDDir + "/" + name + ".pid"
+}
+
 func (s *daemonSystemD) path() string {
 	return "/etc/systemd/system/" + s.config.Name + ".service"
 }
@@ -53,7 +61,7 @@ func (s *daemonSystemD) Install(args ...string) error {
 			strings.Join(s.config.Dependencies, " "),
 			execPath,
 			strings.Join(args, " "),
-			s.config.pidPath(),
+			s.pidFile(),
 		},
 	); err != nil {
 		return err

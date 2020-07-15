@@ -13,6 +13,22 @@ type daemonSystemV struct {
 	config *Config
 }
 
+func (s *daemonSystemV) pidFile() string {
+	name := s.config.PIDName
+	if s.config.PIDName == "" {
+		name = s.config.Name
+	}
+	return s.config.PIDDir + "/" + name + ".pid"
+}
+
+func (s *daemonSystemV) startRunLevels() []string {
+	return runLevels(s.config.StartRunLevels)
+}
+
+func (s *daemonSystemV) stopRunLevels() []string {
+	return runLevels(s.config.StopRunLevels)
+}
+
 func (s *daemonSystemV) path() string {
 	return "/etc/init.d/" + s.config.Name
 }
@@ -56,9 +72,9 @@ func (s *daemonSystemV) Install(args ...string) error {
 			s.config.Description,
 			execPath,
 			strings.Join(args, " "),
-			s.config.pidPath(),
-			strings.Join(s.config.startRunLevels(), " "),
-			strings.Join(s.config.stopRunLevels(), " "),
+			s.pidFile(),
+			strings.Join(s.startRunLevels(), " "),
+			strings.Join(s.stopRunLevels(), " "),
 		},
 	); err != nil {
 		return err
@@ -66,12 +82,12 @@ func (s *daemonSystemV) Install(args ...string) error {
 	if err = os.Chmod(srvPath, 0755); err != nil {
 		return err
 	}
-	for _, lvl = range s.config.startRunLevels() {
+	for _, lvl = range s.startRunLevels() {
 		if err = os.Symlink(srvPath, "/etc/rc"+lvl+".d/S87"+s.config.Name); err != nil {
 			continue
 		}
 	}
-	for _, lvl = range s.config.stopRunLevels() {
+	for _, lvl = range s.stopRunLevels() {
 		if err = os.Symlink(srvPath, "/etc/rc"+lvl+".d/K17"+s.config.Name); err != nil {
 			continue
 		}
@@ -87,12 +103,12 @@ func (s *daemonSystemV) Uninstall() error {
 	if err = os.Remove(s.path()); err != nil {
 		return err
 	}
-	for _, lvl = range s.config.startRunLevels() {
+	for _, lvl = range s.startRunLevels() {
 		if err = os.Remove("/etc/rc" + lvl + ".d/S87" + s.config.Name); err != nil {
 			continue
 		}
 	}
-	for _, lvl = range s.config.stopRunLevels() {
+	for _, lvl = range s.stopRunLevels() {
 		if err = os.Remove("/etc/rc" + lvl + ".d/K17" + s.config.Name); err != nil {
 			continue
 		}

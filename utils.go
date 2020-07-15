@@ -68,11 +68,3 @@ func executablePath(name string) (string, error) {
 	}
 	return os.Executable()
 }
-
-func runLevels(levels []int) []string {
-	var result []string
-	for _, lvl := range levels {
-		result = append(result, strconv.FormatInt(int64(lvl), 10))
-	}
-	return result
-}

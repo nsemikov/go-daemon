@@ -71,22 +71,6 @@ type Config struct {
 	InfoHdlr func(format string, args ...interface{})
 }
 
-func (c Config) pidPath() string {
-	name := c.PIDName
-	if c.PIDName == "" {
-		name = c.Name
-	}
-	return c.PIDDir + "/" + name + ".pid"
-}
-
-func (c Config) startRunLevels() []string {
-	return runLevels(c.StartRunLevels)
-}
-
-func (c Config) stopRunLevels() []string {
-	return runLevels(c.StopRunLevels)
-}
-
 func (c *Config) check() error {
 	if c == nil {
 		return ErrConfigNotSpecified
