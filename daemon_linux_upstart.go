@@ -13,29 +13,29 @@ type daemonUpstart struct {
 	config *Config
 }
 
-func (s *daemonUpstart) startRunLevels() []string {
-	return runLevels(s.config.StartRunLevels)
+func (d *daemonUpstart) startRunLevels() []string {
+	return runLevels(d.config.StartRunLevels)
 }
 
-func (s *daemonUpstart) stopRunLevels() []string {
-	return runLevels(s.config.StopRunLevels)
+func (d *daemonUpstart) stopRunLevels() []string {
+	return runLevels(d.config.StopRunLevels)
 }
 
-func (s *daemonUpstart) path() string {
-	return "/etc/init/" + s.config.Name + ".conf"
+func (d *daemonUpstart) path() string {
+	return "/etc/init/" + d.config.Name + ".conf"
 }
 
-func (s *daemonUpstart) installed() bool {
-	return checkInstalled(s.path())
+func (d *daemonUpstart) installed() bool {
+	return checkInstalled(d.path())
 }
 
-func (s *daemonUpstart) running() (string, bool) {
-	return checkRunning(s.config.Name+" start/running", "process ([0-9]+)", "service", s.config.Name, "status")
+func (d *daemonUpstart) running() (string, bool) {
+	return checkRunning(d.config.Name+" start/running", "process ([0-9]+)", "service", d.config.Name, "status")
 }
 
-func (s *daemonUpstart) Install(args ...string) error {
+func (d *daemonUpstart) Install(args ...string) error {
 	var (
-		srvPath  = s.path()
+		srvPath  = d.path()
 		file     *os.File
 		execPath string
 		templ    *template.Template
@@ -46,11 +46,11 @@ func (s *daemonUpstart) Install(args ...string) error {
 		return err
 	}
 	defer file.Close()
-	execPath, err = executablePath(s.config.Name)
+	execPath, err = executablePath(d.config.Name)
 	if err != nil {
 		return err
 	}
-	templ, err = template.New("upstart").Parse(s.config.TemplateLinuxUpstart)
+	templ, err = template.New("upstart").Parse(d.config.TemplateLinuxUpstart)
 	if err != nil {
 		return err
 	}
@@ -59,12 +59,12 @@ func (s *daemonUpstart) Install(args ...string) error {
 		&struct {
 			Name, Description, Path, Args, StartRunLevels, StopRunLevels string
 		}{
-			s.config.Name,
-			s.config.Description,
+			d.config.Name,
+			d.config.Description,
 			execPath,
 			strings.Join(args, " "),
-			strings.Join(s.startRunLevels(), ""),
-			strings.Join(s.stopRunLevels(), ""),
+			strings.Join(d.startRunLevels(), ""),
+			strings.Join(d.stopRunLevels(), ""),
 		},
 	); err != nil {
 		return err
@@ -75,22 +75,22 @@ func (s *daemonUpstart) Install(args ...string) error {
 	return nil
 }
 
-func (s *daemonUpstart) Uninstall() error {
-	return os.Remove(s.path())
+func (d *daemonUpstart) Uninstall() error {
+	return os.Remove(d.path())
 }
 
-func (s *daemonUpstart) Restart() error {
-	return exec.Command("restart", s.config.Name).Run()
+func (d *daemonUpstart) Restart() error {
+	return exec.Command("restart", d.config.Name).Run()
 }
 
-func (s *daemonUpstart) Start() error {
-	return exec.Command("start", s.config.Name).Run()
+func (d *daemonUpstart) Start() error {
+	return exec.Command("start", d.config.Name).Run()
 }
 
-func (s *daemonUpstart) Stop() error {
-	return exec.Command("stop", s.config.Name).Run()
+func (d *daemonUpstart) Stop() error {
+	return exec.Command("stop", d.config.Name).Run()
 }
 
-func (s *daemonUpstart) Reload() error {
-	return exec.Command("reload", s.config.Name, "reload").Run()
+func (d *daemonUpstart) Reload() error {
+	return exec.Command("reload", d.config.Name, "reload").Run()
 }

@@ -32,144 +32,144 @@ func New(c *Config) (Daemon, error) {
 	return &daemon{specific, c}, nil
 }
 
-func (s *daemon) Install(args ...string) (string, error) {
+func (d *daemon) Install(args ...string) (string, error) {
 	var (
-		action = "Install " + s.config.Description + ":"
+		action = "Install " + d.config.Description + ":"
 		ok     bool
 		err    error
 	)
 	if ok, err = checkPrivileges(); !ok {
 		return failed(action), err
 	}
-	if s.specific.installed() {
+	if d.specific.installed() {
 		return failed(action), ErrAlreadyInstalled
 	}
-	if err = s.specific.Install(args...); err != nil {
+	if err = d.specific.Install(args...); err != nil {
 		return failed(action), err
 	}
 	return success(action), nil
 }
 
-func (s *daemon) Uninstall() (string, error) {
+func (d *daemon) Uninstall() (string, error) {
 	var (
-		action = "Uninstalling " + s.config.Description + ":"
+		action = "Uninstalling " + d.config.Description + ":"
 		ok     bool
 		err    error
 	)
 	if ok, err = checkPrivileges(); !ok {
 		return failed(action), err
 	}
-	if !s.specific.installed() {
+	if !d.specific.installed() {
 		return failed(action), ErrNotInstalled
 	}
-	if err = s.specific.Uninstall(); err != nil {
+	if err = d.specific.Uninstall(); err != nil {
 		return failed(action), err
 	}
 	return success(action), nil
 }
 
-func (s *daemon) Restart() (string, error) {
+func (d *daemon) Restart() (string, error) {
 	var (
-		action = "Restarting " + s.config.Description + ":"
+		action = "Restarting " + d.config.Description + ":"
 		ok     bool
 		err    error
 	)
 	if ok, err = checkPrivileges(); !ok {
 		return failed(action), err
 	}
-	if !s.specific.installed() {
+	if !d.specific.installed() {
 		return failed(action), ErrNotInstalled
 	}
-	if err = s.specific.Restart(); err != nil {
+	if err = d.specific.Restart(); err != nil {
 		return failed(action), err
 	}
 	return success(action), nil
 }
 
-func (s *daemon) Start() (string, error) {
+func (d *daemon) Start() (string, error) {
 	var (
-		action = "Starting " + s.config.Description + ":"
+		action = "Starting " + d.config.Description + ":"
 		ok     bool
 		err    error
 	)
 	if ok, err = checkPrivileges(); !ok {
 		return failed(action), err
 	}
-	if !s.specific.installed() {
+	if !d.specific.installed() {
 		return failed(action), ErrNotInstalled
 	}
-	if _, ok = s.specific.running(); ok {
+	if _, ok = d.specific.running(); ok {
 		return failed(action), ErrAlreadyRunning
 	}
-	if err = s.specific.Start(); err != nil {
+	if err = d.specific.Start(); err != nil {
 		return failed(action), err
 	}
 	return success(action), nil
 }
 
-func (s *daemon) Stop() (string, error) {
+func (d *daemon) Stop() (string, error) {
 	var (
-		action = "Stopping " + s.config.Description + ":"
+		action = "Stopping " + d.config.Description + ":"
 		ok     bool
 		err    error
 	)
 	if ok, err = checkPrivileges(); !ok {
 		return failed(action), err
 	}
-	if !s.specific.installed() {
+	if !d.specific.installed() {
 		return failed(action), ErrNotInstalled
 	}
-	if _, ok = s.specific.running(); !ok {
+	if _, ok = d.specific.running(); !ok {
 		return failed(action), ErrAlreadyStopped
 	}
-	if err = s.specific.Stop(); err != nil {
+	if err = d.specific.Stop(); err != nil {
 		return failed(action), err
 	}
 	return success(action), nil
 }
 
-func (s *daemon) Status() (string, error) {
+func (d *daemon) Status() (string, error) {
 	if ok, err := checkPrivileges(); !ok {
 		return "", err
 	}
-	if !s.specific.installed() {
+	if !d.specific.installed() {
 		return statusNotInstalled, ErrNotInstalled
 	}
-	status, _ := s.specific.running()
+	status, _ := d.specific.running()
 	return status, nil
 }
 
-func (s *daemon) Reload() (string, error) {
+func (d *daemon) Reload() (string, error) {
 	var (
-		action = "Stopping " + s.config.Description + ":"
+		action = "Stopping " + d.config.Description + ":"
 		ok     bool
 		err    error
 	)
 	if ok, err = checkPrivileges(); !ok {
 		return failed(action), err
 	}
-	if !s.specific.installed() {
+	if !d.specific.installed() {
 		return failed(action), ErrNotInstalled
 	}
-	if _, ok = s.specific.running(); !ok {
+	if _, ok = d.specific.running(); !ok {
 		return failed(action), ErrNotStarted
 	}
-	if err = s.specific.Reload(); err != nil {
+	if err = d.specific.Reload(); err != nil {
 		return failed(action), err
 	}
 	return success(action), nil
 }
 
-func (s *daemon) Pause() (string, error) {
+func (d *daemon) Pause() (string, error) {
 	return "", ErrUnsupportedSystem
 }
-func (s *daemon) Continue() (string, error) {
+func (d *daemon) Continue() (string, error) {
 	return "", ErrUnsupportedSystem
 }
 
 // Run - Run service
-func (s *daemon) Run() error {
-	return s.config.RunHdlr()
+func (d *daemon) Run() error {
+	return d.config.RunHdlr()
 }
 
 type daemonSpecific interface {

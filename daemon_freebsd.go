@@ -25,23 +25,23 @@ func New(c *Config) (Daemon, error) {
 	return &daemon{c}, nil
 }
 
-func (s *daemon) pidFile() string {
-	name := s.config.PIDName
-	if s.config.PIDName == "" {
-		name = s.config.Name
+func (d *daemon) pidFile() string {
+	name := d.config.PIDName
+	if d.config.PIDName == "" {
+		name = d.config.Name
 	}
-	return s.config.PIDDir + "/" + name + ".pid"
+	return d.config.PIDDir + "/" + name + ".pid"
 }
 
-func (s *daemon) path() string {
-	return "/usr/local/etc/rc.d/" + s.config.Name
+func (d *daemon) path() string {
+	return "/usr/local/etc/rc.d/" + d.config.Name
 }
 
-func (s *daemon) installed() bool {
-	return checkInstalled(s.path())
+func (d *daemon) installed() bool {
+	return checkInstalled(d.path())
 }
 
-func (s *daemon) enabled() (bool, error) {
+func (d *daemon) enabled() (bool, error) {
 	rcConf, err := os.Open("/etc/rc.conf")
 	if err != nil {
 		fmt.Println("Error opening file:", err)
@@ -49,7 +49,7 @@ func (s *daemon) enabled() (bool, error) {
 	}
 	defer rcConf.Close()
 	rcData, _ := ioutil.ReadAll(rcConf)
-	r, _ := regexp.Compile(`.*` + s.config.Name + `_enable="YES".*`)
+	r, _ := regexp.Compile(`.*` + d.config.Name + `_enable="YES".*`)
 	v := string(r.Find(rcData))
 	var chrFound, sharpFound bool
 	for _, c := range v {
@@ -64,25 +64,25 @@ func (s *daemon) enabled() (bool, error) {
 	return chrFound, nil
 }
 
-func (s *daemon) cmd(cmd string) string {
-	if ok, err := s.enabled(); !ok || err != nil {
+func (d *daemon) cmd(cmd string) string {
+	if ok, err := d.enabled(); !ok || err != nil {
 		fmt.Println("Daemon is not enabled, using one" + cmd + " instead")
 		cmd = "one" + cmd
 	}
 	return cmd
 }
 
-func (s *daemon) running() (string, bool) {
-	return checkRunning(s.config.Name, "PID\" = ([0-9]+);", "launchctl", "list", s.config.Name)
+func (d *daemon) running() (string, bool) {
+	return checkRunning(d.config.Name, "PID\" = ([0-9]+);", "launchctl", "list", d.config.Name)
 }
 
-func (s *daemon) Install(args ...string) (string, error) {
-	action := "Install " + s.config.Description + ":"
+func (d *daemon) Install(args ...string) (string, error) {
+	action := "Install " + d.config.Description + ":"
 	if ok, err := checkPrivileges(); !ok {
 		return failed(action), err
 	}
-	srvPath := s.path()
-	if s.installed() {
+	srvPath := d.path()
+	if d.installed() {
 		return failed(action), ErrAlreadyInstalled
 	}
 	file, err := os.Create(srvPath)
@@ -90,11 +90,11 @@ func (s *daemon) Install(args ...string) (string, error) {
 		return failed(action), err
 	}
 	defer file.Close()
-	execPath, err := executablePath(s.config.Name)
+	execPath, err := executablePath(d.config.Name)
 	if err != nil {
 		return failed(action), err
 	}
-	templ, err := template.New("bsd").Parse(s.config.TemplateFreeBSDSystemV)
+	templ, err := template.New("bsd").Parse(d.config.TemplateFreeBSDSystemV)
 	if err != nil {
 		return failed(action), err
 	}
@@ -102,7 +102,7 @@ func (s *daemon) Install(args ...string) (string, error) {
 		file,
 		&struct {
 			Name, Description, Path, Args, PIDFile string
-		}{s.config.Name, s.config.Description, execPath, strings.Join(args, " "), s.pidFile()},
+		}{d.config.Name, d.config.Description, execPath, strings.Join(args, " "), d.pidFile()},
 	); err != nil {
 		return failed(action), err
 	}
@@ -112,91 +112,91 @@ func (s *daemon) Install(args ...string) (string, error) {
 	return success(action), nil
 }
 
-func (s *daemon) Uninstall() (string, error) {
-	action := "Uninstalling " + s.config.Description + ":"
+func (d *daemon) Uninstall() (string, error) {
+	action := "Uninstalling " + d.config.Description + ":"
 	if ok, err := checkPrivileges(); !ok {
 		return failed(action), err
 	}
-	if !s.installed() {
+	if !d.installed() {
 		return failed(action), ErrNotInstalled
 	}
-	if err := os.Remove(s.path()); err != nil {
+	if err := os.Remove(d.path()); err != nil {
 		return failed(action), err
 	}
 	return success(action), nil
 }
 
-func (s *daemon) Start() (string, error) {
-	action := "Starting " + s.config.Description + ":"
+func (d *daemon) Start() (string, error) {
+	action := "Starting " + d.config.Description + ":"
 	if ok, err := checkPrivileges(); !ok {
 		return failed(action), err
 	}
-	if !s.installed() {
+	if !d.installed() {
 		return failed(action), ErrNotInstalled
 	}
-	if _, ok := s.running(); ok {
+	if _, ok := d.running(); ok {
 		return failed(action), ErrAlreadyRunning
 	}
-	if err := exec.Command("service", s.config.Name, s.cmd("start")).Run(); err != nil {
+	if err := exec.Command("service", d.config.Name, d.cmd("start")).Run(); err != nil {
 		return failed(action), err
 	}
 	return success(action), nil
 }
 
-func (s *daemon) Restart() (string, error) {
-	action := "Restarting " + s.config.Description + ":"
+func (d *daemon) Restart() (string, error) {
+	action := "Restarting " + d.config.Description + ":"
 	if ok, err := checkPrivileges(); !ok {
 		return failed(action), err
 	}
-	if !s.installed() {
+	if !d.installed() {
 		return failed(action), ErrNotInstalled
 	}
-	if err := exec.Command("service", s.config.Name, s.cmd("restart")).Run(); err != nil {
+	if err := exec.Command("service", d.config.Name, d.cmd("restart")).Run(); err != nil {
 		return failed(action), err
 	}
 	return success(action), nil
 }
 
-func (s *daemon) Stop() (string, error) {
-	action := "Stopping " + s.config.Description + ":"
+func (d *daemon) Stop() (string, error) {
+	action := "Stopping " + d.config.Description + ":"
 	if ok, err := checkPrivileges(); !ok {
 		return failed(action), err
 	}
-	if !s.installed() {
+	if !d.installed() {
 		return failed(action), ErrNotInstalled
 	}
-	if _, ok := s.running(); !ok {
+	if _, ok := d.running(); !ok {
 		return failed(action), ErrAlreadyStopped
 	}
-	if err := exec.Command("service", s.config.Name, s.cmd("stop")).Run(); err != nil {
+	if err := exec.Command("service", d.config.Name, d.cmd("stop")).Run(); err != nil {
 		return failed(action), err
 	}
 	return success(action), nil
 }
 
-func (s *daemon) Status() (string, error) {
+func (d *daemon) Status() (string, error) {
 	if ok, err := checkPrivileges(); !ok {
 		return "", err
 	}
-	if !s.installed() {
+	if !d.installed() {
 		return statusNotInstalled, ErrNotInstalled
 	}
-	status, _ := s.running()
+	status, _ := d.running()
 	return status, nil
 }
 
-func (s *daemon) Reload() (string, error) {
+func (d *daemon) Reload() (string, error) {
 	return "", ErrUnsupportedSystem
 }
 
-func (s *daemon) Pause() (string, error) {
+func (d *daemon) Pause() (string, error) {
 	return "", ErrUnsupportedSystem
 }
-func (s *daemon) Continue() (string, error) {
+func (d *daemon) Continue() (string, error) {
 	return "", ErrUnsupportedSystem
 }
 
 // Run - Run service
-func (s *daemon) Run() error {
-	return s.config.RunHdlr()
+func (d *daemon) Run() error {
+	return d.config.RunHdlr()
 }

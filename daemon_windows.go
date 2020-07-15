@@ -30,9 +30,9 @@ func New(c *Config) (Daemon, error) {
 	return &daemon{c}, nil
 }
 
-func (s *daemon) Install(args ...string) (string, error) {
+func (d *daemon) Install(args ...string) (string, error) {
 	var (
-		action = "Install " + s.config.Description + ":"
+		action = "Install " + d.config.Description + ":"
 		execp  string
 		m      *mgr.Mgr
 		w      *mgr.Service
@@ -47,17 +47,17 @@ func (s *daemon) Install(args ...string) (string, error) {
 	defer func() {
 		_ = m.Disconnect()
 	}()
-	if w, err = m.OpenService(s.config.Name); err == nil {
+	if w, err = m.OpenService(d.config.Name); err == nil {
 		w.Close()
 		return failed(action), getWindowsError(err)
 	}
-	if w, err = m.CreateService(s.config.Name, execp, mgr.Config{
-		DisplayName:      s.config.Name,
-		Description:      s.config.Description,
-		StartType:        s.config.WindowsStartMode,
-		Dependencies:     s.config.Dependencies,
-		ServiceStartName: s.config.WindowsStartAccountName,
-		Password:         s.config.WindowsStartAccountPassword,
+	if w, err = m.CreateService(d.config.Name, execp, mgr.Config{
+		DisplayName:      d.config.Name,
+		Description:      d.config.Description,
+		StartType:        d.config.WindowsStartMode,
+		Dependencies:     d.config.Dependencies,
+		ServiceStartName: d.config.WindowsStartAccountName,
+		Password:         d.config.WindowsStartAccountPassword,
 	}, args...); err != nil {
 		return failed(action), getWindowsError(err)
 	}
@@ -86,9 +86,9 @@ func (s *daemon) Install(args ...string) (string, error) {
 	return success(action), nil
 }
 
-func (s *daemon) Uninstall() (string, error) {
+func (d *daemon) Uninstall() (string, error) {
 	var (
-		action = "Uninstalling " + s.config.Description + ":"
+		action = "Uninstalling " + d.config.Description + ":"
 		m      *mgr.Mgr
 		w      *mgr.Service
 		err    error
@@ -99,7 +99,7 @@ func (s *daemon) Uninstall() (string, error) {
 	defer func() {
 		_ = m.Disconnect()
 	}()
-	if w, err = m.OpenService(s.config.Name); err != nil {
+	if w, err = m.OpenService(d.config.Name); err != nil {
 		return failed(action), getWindowsError(err)
 	}
 	defer w.Close()
@@ -109,9 +109,9 @@ func (s *daemon) Uninstall() (string, error) {
 	return success(action), nil
 }
 
-func (s *daemon) Restart() (string, error) {
+func (d *daemon) Restart() (string, error) {
 	var (
-		action = "Restarting " + s.config.Description + ":"
+		action = "Restarting " + d.config.Description + ":"
 		m      *mgr.Mgr
 		w      *mgr.Service
 		err    error
@@ -122,7 +122,7 @@ func (s *daemon) Restart() (string, error) {
 	defer func() {
 		_ = m.Disconnect()
 	}()
-	if w, err = m.OpenService(s.config.Name); err != nil {
+	if w, err = m.OpenService(d.config.Name); err != nil {
 		return failed(action), getWindowsError(err)
 	}
 	defer w.Close()
@@ -135,9 +135,9 @@ func (s *daemon) Restart() (string, error) {
 	return success(action), nil
 }
 
-func (s *daemon) Start() (string, error) {
+func (d *daemon) Start() (string, error) {
 	var (
-		action = "Starting " + s.config.Description + ":"
+		action = "Starting " + d.config.Description + ":"
 		m      *mgr.Mgr
 		w      *mgr.Service
 		err    error
@@ -148,7 +148,7 @@ func (s *daemon) Start() (string, error) {
 	defer func() {
 		_ = m.Disconnect()
 	}()
-	if w, err = m.OpenService(s.config.Name); err != nil {
+	if w, err = m.OpenService(d.config.Name); err != nil {
 		return failed(action), getWindowsError(err)
 	}
 	defer w.Close()
@@ -158,9 +158,9 @@ func (s *daemon) Start() (string, error) {
 	return success(action), nil
 }
 
-func (s *daemon) Stop() (string, error) {
+func (d *daemon) Stop() (string, error) {
 	var (
-		action = "Stopping " + s.config.Description + ":"
+		action = "Stopping " + d.config.Description + ":"
 		m      *mgr.Mgr
 		w      *mgr.Service
 		err    error
@@ -171,7 +171,7 @@ func (s *daemon) Stop() (string, error) {
 	defer func() {
 		_ = m.Disconnect()
 	}()
-	if w, err = m.OpenService(s.config.Name); err != nil {
+	if w, err = m.OpenService(d.config.Name); err != nil {
 		return failed(action), getWindowsError(err)
 	}
 	defer w.Close()
@@ -181,9 +181,9 @@ func (s *daemon) Stop() (string, error) {
 	return success(action), nil
 }
 
-func (s *daemon) Status() (string, error) {
+func (d *daemon) Status() (string, error) {
 	var (
-		action = "Getting status " + s.config.Description + ":"
+		action = "Getting status " + d.config.Description + ":"
 		m      *mgr.Mgr
 		w      *mgr.Service
 		status svc.Status
@@ -195,23 +195,23 @@ func (s *daemon) Status() (string, error) {
 	defer func() {
 		_ = m.Disconnect()
 	}()
-	if w, err = m.OpenService(s.config.Name); err != nil {
+	if w, err = m.OpenService(d.config.Name); err != nil {
 		return failed(action), getWindowsError(err)
 	}
 	defer w.Close()
 	if status, err = w.Query(); err != nil {
 		return failed(action), getWindowsError(err)
 	}
-	return "Status " + s.config.Description + ":" + getWindowsServiceStateFromUint32(status.State), nil
+	return "Status " + d.config.Description + ":" + getWindowsServiceStateFromUint32(status.State), nil
 }
 
-func (s *daemon) Reload() (string, error) {
+func (d *daemon) Reload() (string, error) {
 	return "", ErrUnsupportedSystem
 }
 
-func (s *daemon) Pause() (string, error) {
+func (d *daemon) Pause() (string, error) {
 	var (
-		action = "Pausing " + s.config.Description + ":"
+		action = "Pausing " + d.config.Description + ":"
 		m      *mgr.Mgr
 		w      *mgr.Service
 		err    error
@@ -222,7 +222,7 @@ func (s *daemon) Pause() (string, error) {
 	defer func() {
 		_ = m.Disconnect()
 	}()
-	if w, err = m.OpenService(s.config.Name); err != nil {
+	if w, err = m.OpenService(d.config.Name); err != nil {
 		return failed(action), getWindowsError(err)
 	}
 	defer w.Close()
@@ -231,9 +231,9 @@ func (s *daemon) Pause() (string, error) {
 	}
 	return success(action), nil
 }
-func (s *daemon) Continue() (string, error) {
+func (d *daemon) Continue() (string, error) {
 	var (
-		action = "Resuming " + s.config.Description + ":"
+		action = "Resuming " + d.config.Description + ":"
 		m      *mgr.Mgr
 		w      *mgr.Service
 		err    error
@@ -244,7 +244,7 @@ func (s *daemon) Continue() (string, error) {
 	defer func() {
 		_ = m.Disconnect()
 	}()
-	if w, err = m.OpenService(s.config.Name); err != nil {
+	if w, err = m.OpenService(d.config.Name); err != nil {
 		return failed(action), getWindowsError(err)
 	}
 	defer w.Close()
@@ -255,7 +255,7 @@ func (s *daemon) Continue() (string, error) {
 }
 
 // Run - Run service
-func (s *daemon) Run() error {
+func (d *daemon) Run() error {
 	var (
 		interactive bool
 		runit       func(string, svc.Handler) error
@@ -269,7 +269,7 @@ func (s *daemon) Run() error {
 	if interactive {
 		runit = debug.Run
 	}
-	if err = runit(s.config.Name, &serviceHandler{s.config}); err != nil {
+	if err = runit(d.config.Name, &serviceHandler{d.config}); err != nil {
 		return getWindowsError(err)
 	}
 	return nil
@@ -360,9 +360,9 @@ type serviceHandler struct {
 	config *Config
 }
 
-func (s *serviceHandler) Execute(args []string, r <-chan svc.ChangeRequest, changes chan<- svc.Status) (ssec bool, errno uint32) {
-	var cmdsAccepted = s.config.acceptedCommands()
-	defer s.executeRecover()
+func (hdlr *serviceHandler) Execute(args []string, r <-chan svc.ChangeRequest, changes chan<- svc.Status) (ssec bool, errno uint32) {
+	var cmdsAccepted = hdlr.config.acceptedCommands()
+	defer hdlr.executeRecover()
 	changes <- svc.Status{State: svc.StartPending}
 
 	fasttick := time.NewTicker(500 * time.Millisecond)
@@ -370,7 +370,7 @@ func (s *serviceHandler) Execute(args []string, r <-chan svc.ChangeRequest, chan
 	tick := fasttick
 
 	var err error
-	if err = s.config.StartHdlr(); err != nil {
+	if err = hdlr.config.StartHdlr(); err != nil {
 		return
 	}
 	changes <- svc.Status{State: svc.Running, Accepts: cmdsAccepted}
@@ -388,19 +388,19 @@ loop:
 				time.Sleep(100 * time.Millisecond)
 				changes <- c.CurrentStatus
 			case svc.Stop, svc.Shutdown:
-				_ = s.config.StopHdlr()
+				_ = hdlr.config.StopHdlr()
 				changes <- svc.Status{State: svc.StopPending}
 				break loop
 			case svc.Pause:
-				err = s.config.PauseHdlr()
+				err = hdlr.config.PauseHdlr()
 				changes <- svc.Status{State: svc.Paused, Accepts: cmdsAccepted}
 				tick = slowtick
 			case svc.Continue:
-				err = s.config.ContinueHdlr()
+				err = hdlr.config.ContinueHdlr()
 				changes <- svc.Status{State: svc.Running, Accepts: cmdsAccepted}
 				tick = fasttick
 			default:
-				s.config.ErrorHdlr("unexpected control request #%d", c)
+				hdlr.config.ErrorHdlr("unexpected control request #%d", c)
 				continue loop
 			}
 			if err != nil {
@@ -411,11 +411,11 @@ loop:
 	return
 }
 
-func (s *serviceHandler) executeRecover() {
+func (hdlr *serviceHandler) executeRecover() {
 	str := recover()
 	if str != nil {
 		str = fmt.Sprintf("%s; %s", str, string(runtimeDebug.Stack()))
-		s.config.ErrorHdlr("execute panic: %v", str)
+		hdlr.config.ErrorHdlr("execute panic: %v", str)
 	}
 }
 
