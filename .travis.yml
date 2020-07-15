@@ -17,7 +17,7 @@ install:
 script:
   - golangci-lint run
   # onlytest on linux
-  - if [ $GOOS == "linux" ]; then go test -race -coverprofile=coverage.txt -covermode=atomic ./...; fi
+  - if [ "$GOOS" = "linux" ]; then go test -race -coverprofile=coverage.txt -covermode=atomic ./...; fi
 after_success:
   - bash <(curl -s https://codecov.io/bash)
 matrix:
