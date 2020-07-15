@@ -46,13 +46,14 @@ func (s *daemonSystemD) Install(args ...string) error {
 	if err = templ.Execute(
 		file,
 		&struct {
-			Name, Description, Dependencies, Path, Args string
+			Name, Description, Dependencies, Path, Args, PIDFile string
 		}{
 			s.config.Name,
 			s.config.Description,
 			strings.Join(s.config.Dependencies, " "),
 			execPath,
 			strings.Join(args, " "),
+			s.config.pidPath(),
 		},
 	); err != nil {
 		return err

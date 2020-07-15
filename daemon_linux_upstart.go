@@ -49,8 +49,15 @@ func (s *daemonUpstart) Install(args ...string) error {
 	if err := templ.Execute(
 		file,
 		&struct {
-			Name, Description, Path, Args string
-		}{s.config.Name, s.config.Description, execPath, strings.Join(args, " ")},
+			Name, Description, Path, Args, StartRunLevels, StopRunLevels string
+		}{
+			s.config.Name,
+			s.config.Description,
+			execPath,
+			strings.Join(args, " "),
+			strings.Join(s.config.startRunLevels(), ""),
+			strings.Join(s.config.stopRunLevels(), ""),
+		},
 	); err != nil {
 		return err
 	}

@@ -93,8 +93,8 @@ func (s *daemon) Install(args ...string) (string, error) {
 	if err := templ.Execute(
 		file,
 		&struct {
-			Name, Description, Path, Args string
-		}{s.config.Name, s.config.Description, execPath, strings.Join(args, " ")},
+			Name, Description, Path, Args, PIDFile string
+		}{s.config.Name, s.config.Description, execPath, strings.Join(args, " "), s.config.pidPath()},
 	); err != nil {
 		return failed(action), err
 	}

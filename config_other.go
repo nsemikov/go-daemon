@@ -20,6 +20,11 @@ func NewConfig() *Config {
 		TemplateLinuxUpstart:      defaultTemplateLinuxUpstart,
 		TemplateMacOSPorpertyList: defaultTemplateMacOSPorpertyList,
 
+		PIDDir: "/run",
+
+		StartRunLevels: []int{2, 3, 4, 5},
+		StopRunLevels:  []int{0, 1, 6},
+
 		ErrorHdlr: func(format string, args ...interface{}) {
 			fmt.Fprintf(os.Stderr, format+"\n", args...)
 		},

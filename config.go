@@ -9,6 +9,22 @@ type Config struct {
 	// Dependencies of daemon
 	Dependencies []string
 
+	// PIDDir is path to the directory containing the pid file.
+	// Default value is "/run".
+	// Suitable for for SystemV only
+	PIDDir string
+	// PIDName is empty by default.
+	// In this case, Name will be used instead of PIDName
+	// Suitable for for SystemV only
+	PIDName string
+
+	// StartRunLevels is start run levels, [2, 3, 4, 5] by default.
+	// Suitable for for Linux SystemV and UpStart only
+	StartRunLevels []int
+	// StopRunLevels is stop run levels, [0, 1, 6] by default.
+	// Suitable for for Linux SystemV and UpStart only
+	StopRunLevels []int
+
 	// TemplateLinuxUpstart contains template for Linux UpStart service file
 	TemplateLinuxUpstart string
 	// TemplateLinuxSystemV contains template for Linux SystemV service file
@@ -53,6 +69,22 @@ type Config struct {
 	ErrorHdlr func(format string, args ...interface{})
 	// InfoHdlr is non-blocking information message handler
 	InfoHdlr func(format string, args ...interface{})
+}
+
+func (c Config) pidPath() string {
+	name := c.PIDName
+	if c.PIDName == "" {
+		name = c.Name
+	}
+	return c.PIDDir + "/" + name + ".pid"
+}
+
+func (c Config) startRunLevels() []string {
+	return runLevels(c.StartRunLevels)
+}
+
+func (c Config) stopRunLevels() []string {
+	return runLevels(c.StopRunLevels)
 }
 
 func (c *Config) check() error {

@@ -50,20 +50,28 @@ func (s *daemonSystemV) Install(args ...string) error {
 	if err := templ.Execute(
 		file,
 		&struct {
-			Name, Description, Path, Args string
-		}{s.config.Name, s.config.Description, execPath, strings.Join(args, " ")},
+			Name, Description, Path, Args, PIDFile, StartRunLevels, StopRunLevels string
+		}{
+			s.config.Name,
+			s.config.Description,
+			execPath,
+			strings.Join(args, " "),
+			s.config.pidPath(),
+			strings.Join(s.config.startRunLevels(), " "),
+			strings.Join(s.config.stopRunLevels(), " "),
+		},
 	); err != nil {
 		return err
 	}
 	if err = os.Chmod(srvPath, 0755); err != nil {
 		return err
 	}
-	for _, lvl = range []string{"2", "3", "4", "5"} {
+	for _, lvl = range s.config.startRunLevels() {
 		if err = os.Symlink(srvPath, "/etc/rc"+lvl+".d/S87"+s.config.Name); err != nil {
 			continue
 		}
 	}
-	for _, lvl = range []string{"0", "1", "6"} {
+	for _, lvl = range s.config.stopRunLevels() {
 		if err = os.Symlink(srvPath, "/etc/rc"+lvl+".d/K17"+s.config.Name); err != nil {
 			continue
 		}
@@ -79,12 +87,12 @@ func (s *daemonSystemV) Uninstall() error {
 	if err = os.Remove(s.path()); err != nil {
 		return err
 	}
-	for _, lvl = range []string{"2", "3", "4", "5"} {
+	for _, lvl = range s.config.startRunLevels() {
 		if err = os.Remove("/etc/rc" + lvl + ".d/S87" + s.config.Name); err != nil {
 			continue
 		}
 	}
-	for _, lvl = range []string{"0", "1", "6"} {
+	for _, lvl = range s.config.stopRunLevels() {
 		if err = os.Remove("/etc/rc" + lvl + ".d/K17" + s.config.Name); err != nil {
 			continue
 		}

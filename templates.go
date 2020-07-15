@@ -44,7 +44,7 @@ const (
 name="{{.Name}}"
 rcvar="{{.Name}}_enable"
 command="{{.Path}}"
-pidfile="/run/$name.pid"
+pidfile="{{.PIDFile}}"
 start_cmd="/usr/sbin/daemon -p $pidfile -f $command {{.Args}}"
 load_rc_config $name
 run_rc_command "$1"
@@ -56,8 +56,6 @@ Description={{.Description}}
 Requires={{.Dependencies}}
 After={{.Dependencies}}
 [Service]
-PIDFile=/run/{{.Name}}.pid
-ExecStartPre=/bin/rm -f /run/{{.Name}}.pid
 ExecStart={{.Path}} {{.Args}}
 Restart=on-failure
 [Install]
@@ -77,8 +75,8 @@ WantedBy=multi-user.target
 # Provides: {{.Name}} 
 # Required-Start: $network $named
 # Required-Stop: $network $named
-# Default-Start: 2 3 4 5
-# Default-Stop: 0 1 6
+# Default-Start: {{.StartRunLevels}}
+# Default-Stop: {{.StopRunLevels}}
 # Short-Description: This service manages the {{.Description}}.
 # Description: {{.Description}}
 ### END INIT INFO
@@ -91,7 +89,7 @@ fi
 exec="{{.Path}}"
 servname="{{.Description}}"
 proc="{{.Name}}"
-pidfile="/run/$proc.pid"
+pidfile="{{.PIDFile}}"
 lockfile="/var/lock/subsys/$proc"
 stdoutlog="/var/log/$proc.log"
 stderrlog="/var/log/$proc.err"
@@ -179,8 +177,8 @@ exit $?
 	defaultTemplateLinuxUpstart = `# {{.Name}} {{.Description}}
 description     "{{.Description}}"
 author          "QuickQ <support@quickq.ru>"
-start on runlevel [2345]
-stop on runlevel [016]
+start on runlevel [{{.StartRunLevels}}]
+stop on runlevel [{{.StopRunLevels}}]
 respawn
 #kill timeout 5
 exec {{.Path}} {{.Args}} >> /var/log/{{.Name}}.log 2>> /var/log/{{.Name}}.err
