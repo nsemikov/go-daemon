@@ -8,7 +8,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/stdatiks/go-daemon"
+	"github.com/nsemikov/go-daemon"
 )
 
 type service struct {

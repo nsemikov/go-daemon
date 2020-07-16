@@ -1,4 +1,4 @@
-module github.com/stdatiks/go-daemon
+module github.com/nsemikov/go-daemon
 
 go 1.14
 

@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/stdatiks/go-daemon"
+	"github.com/nsemikov/go-daemon"
 )
 
 type service struct {
