@@ -24,7 +24,7 @@ A daemon package for use with Go services without any dependencies (except for `
 [cov]: https://codecov.io/gh/nsemikov/go-daemon
 [report-img]: https://goreportcard.com/badge/github.com/nsemikov/go-daemon
 [report]: https://goreportcard.com/report/nsemikov/go-daemon
-[release-img]: https://img.shields.io/badge/release-v0.2.1-1eb0fc.svg
-[release]: https://github.com/nsemikov/go-daemon/releases/tag/v0.2.1
+[release-img]: https://img.shields.io/badge/release-v0.4.2-1eb0fc.svg
+[release]: https://github.com/nsemikov/go-daemon/releases/tag/v0.4.2
 [lic-img]: https://img.shields.io/badge/License-MIT-blue.svg
 [lic]: https://opensource.org/licenses/MIT
