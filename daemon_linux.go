@@ -12,6 +12,15 @@ type daemon struct {
 	config   *Config
 }
 
+// Must create Daemon or panic.
+func Must(c *Config) Daemon {
+	d, err := New(c)
+	if err != nil {
+		panic(err)
+	}
+	return d
+}
+
 // New is Daemon constructor. Get the Daemon properly.
 func New(c *Config) (Daemon, error) {
 	var (
