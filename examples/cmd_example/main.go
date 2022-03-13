@@ -33,7 +33,7 @@ func (s service) Stop() error {
 	return s.server.Shutdown(ctx)
 }
 
-func configure() *daemon.Config {
+func newService() *service {
 	s := &service{}
 	s.server = &http.Server{
 		Addr:           ":8080",
@@ -42,22 +42,26 @@ func configure() *daemon.Config {
 		WriteTimeout:   10 * time.Second,
 		MaxHeaderBytes: 1 << 20,
 	}
-	cfg := daemon.NewConfig()
-	cfg.Name = "cmd_example"
-	cfg.Description = "Command Line daemon example"
-	cfg.StartHdlr = s.Start
-	cfg.StopHdlr = s.Stop
-	cfg.HideMethodsWarning = true
-	return cfg
+	return s
 }
 
 func main() {
-	d, _ := daemon.New(configure())
+	s := newService()
+	d, err := daemon.New(daemon.NewConfig(
+		daemon.WithName("cmd_example"),
+		daemon.WithDescription("Command Line daemon example"),
+		daemon.WithStartHdlr(s.Start),
+		daemon.WithStopHdlr(s.Stop),
+		daemon.WithHideMethodsWarning(true),
+	))
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err.Error())
+		os.Exit(1)
+	}
 
 	var (
 		usage  = "Usage: " + os.Args[0] + " install | uninstall | restart | start | stop | status"
 		status string
-		err    error
 	)
 	if len(os.Args) > 1 {
 		command := os.Args[1]

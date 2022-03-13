@@ -1,3 +1,4 @@
+//go:build windows
 // +build windows
 
 package daemon
@@ -13,8 +14,8 @@ import (
 // NewConfig is a Config constructor. Get the Config properly.
 // Fills the generated Config with default templates.
 // Sets WindowsStartMode to StartAutomatic.
-func NewConfig() *Config {
-	return &Config{
+func NewConfig(opts ...ConfigOption) *Config {
+	cfg := &Config{
 		TemplateFreeBSDSystemV:    defaultTemplateFreeBSDSystemV,
 		TemplateLinuxSystemD:      defaultTemplateLinuxSystemD,
 		TemplateLinuxSystemV:      defaultTemplateLinuxSystemV,
@@ -30,6 +31,12 @@ func NewConfig() *Config {
 
 		WindowsStartMode: mgr.StartAutomatic,
 	}
+
+	for _, opt := range opts {
+		opt(cfg)
+	}
+
+	return cfg
 }
 
 func (c Config) acceptedCommands() svc.Accepted {

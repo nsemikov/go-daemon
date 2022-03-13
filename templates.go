@@ -1,3 +1,4 @@
+//go:build windows || linux || darwin || freebsd
 // +build windows linux darwin freebsd
 
 package daemon
@@ -57,6 +58,7 @@ Requires={{.Dependencies}}
 After={{.Dependencies}}
 [Service]
 ExecStart={{.Path}} {{.Args}}
+ExecReload=kill -HUP $MAINPID
 Restart=on-failure
 [Install]
 WantedBy=multi-user.target

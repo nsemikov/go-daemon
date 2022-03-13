@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"html"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/nsemikov/go-daemon"
@@ -41,10 +42,15 @@ func main() {
 		WriteTimeout:   10 * time.Second,
 		MaxHeaderBytes: 1 << 20,
 	}
-	cfg := daemon.NewConfig()
-	cfg.StartHdlr = s.Start
-	cfg.StopHdlr = s.Stop
-	cfg.HideMethodsWarning = true
-	d, _ := daemon.New(cfg)
-	d.Run()
+
+	d, _ := daemon.New(daemon.NewConfig(
+		daemon.WithStartHdlr(s.Start),
+		daemon.WithStopHdlr(s.Stop),
+		daemon.WithHideMethodsWarning(true),
+	))
+
+	if err := d.Run(); err != nil {
+		fmt.Fprintln(os.Stderr, err.Error())
+		os.Exit(1)
+	}
 }

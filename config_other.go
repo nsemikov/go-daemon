@@ -1,3 +1,4 @@
+//go:build linux || darwin || freebsd
 // +build linux darwin freebsd
 
 package daemon
@@ -12,8 +13,8 @@ import (
 
 // NewConfig is a Config constructor. Get the Config properly.
 // Fills the generated Config with default templates.
-func NewConfig() *Config {
-	c := &Config{
+func NewConfig(opts ...ConfigOption) *Config {
+	cfg := &Config{
 		TemplateFreeBSDSystemV:    defaultTemplateFreeBSDSystemV,
 		TemplateLinuxSystemD:      defaultTemplateLinuxSystemD,
 		TemplateLinuxSystemV:      defaultTemplateLinuxSystemV,
@@ -32,8 +33,13 @@ func NewConfig() *Config {
 			fmt.Printf(format+"\n", args...)
 		},
 	}
-	c.RunHdlr = defaultRunHdlr(c)
-	return c
+	cfg.RunHdlr = defaultRunHdlr(cfg)
+
+	for _, opt := range opts {
+		opt(cfg)
+	}
+
+	return cfg
 }
 
 // DefaultRunHdlr will using instead of nil RunHdlr.
