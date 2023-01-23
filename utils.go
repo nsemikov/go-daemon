@@ -4,7 +4,6 @@
 package daemon
 
 import (
-	"fmt"
 	"os"
 	"os/exec"
 	"regexp"
@@ -24,15 +23,6 @@ func success(msg string) string {
 // Show colored "FAILED"
 func failed(msg string) string {
 	return msg + "\t\t\t\t\t[\033[31mFAILED\033[0m]"
-}
-
-func printMessage(err *error, msg string) {
-	if err != nil {
-		msg = failed(msg)
-	} else {
-		msg = success(msg)
-	}
-	fmt.Println(msg)
 }
 
 // Check root rights to use system service
