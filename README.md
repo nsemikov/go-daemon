@@ -10,13 +10,13 @@
 [go.dev-img]: https://img.shields.io/badge/go.dev-reference-007d9c?logo=go&logoColor=white
 [go.dev]: https://pkg.go.dev/github.com/nsemikov/go-daemon
 [ci-img]: https://img.shields.io/travis/com/nsemikov/go-daemon.svg
-[ci]: https://travis-ci.com/nsemikov/go-daemon
+[ci]: https://app.travis-ci.com/github/nsemikov/go-daemon
 [cov-img]: https://img.shields.io/codecov/c/github/nsemikov/go-daemon.svg
 [cov]: https://codecov.io/gh/nsemikov/go-daemon
 [report-img]: https://goreportcard.com/badge/github.com/nsemikov/go-daemon
 [report]: https://goreportcard.com/report/nsemikov/go-daemon
-[release-img]: https://img.shields.io/badge/release-v0.5.0-1eb0fc.svg
-[release]: https://github.com/nsemikov/go-daemon/releases/tag/v0.5.0
+[release-img]: https://img.shields.io/badge/release-v0.5.1-1eb0fc.svg
+[release]: https://github.com/nsemikov/go-daemon/releases/tag/v0.5.1
 [lic-img]: https://img.shields.io/badge/License-MIT-blue.svg
 [lic]: https://opensource.org/licenses/MIT
 
